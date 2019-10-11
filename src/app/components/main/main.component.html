@@ -1,10 +1,10 @@
 <div class="movie-wrapper" ng-app>
     <div class="search">
-        <input type="text" placeholder="Film arayın..." [(ngModel)]="searchText" (keyup.enter) ="getMovies()">
+        <input type="text" placeholder="Film arayın..." (ngModelChange)="textChanged$.next($event)" [(ngModel)]="searchText">
         <i class="fa fa-search" aria-hidden="true"></i>
     </div>
     <div class="clearfix"></div>
-<div class="thumbnail" *ngFor="let movie of movies">
+<div class="thumbnail" *ngFor="let movie of movies; let i = index">
             <img [src]="movie.Poster">
             <h1>{{movie.Title}}</h1>
             <h2>{{movie.Type}}</h2>

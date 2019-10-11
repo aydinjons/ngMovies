@@ -1,6 +1,7 @@
 import { MovieService } from './../../services/movie.service';
 import { Component, OnInit } from '@angular/core';
-import { filter,map,tap } from 'rxjs/operators';
+import { filter, map, tap, debounceTime, switchMap } from 'rxjs/operators';
+import { fromEvent, Subject } from 'rxjs';
 
 
 
@@ -10,29 +11,33 @@ import { filter,map,tap } from 'rxjs/operators';
   styleUrls: ['./main.component.css']
 })
 export class MainComponent implements OnInit {
-  movies =[];
-  searchText: string;
+  movies = [];
+  searchText: string = "";
   errorMessage: string;
+  textChanged$ = new Subject<string>();
 
-  constructor(private movieservice:MovieService) { }
+  constructor(private movieservice: MovieService) { }
 
   ngOnInit() {
-  }
-  
-  getMovies()  {
-    this.movieservice.getAllMovies(this.searchText).pipe(
-      tap((data: any)=> {
-        if(data.Response == 'False'){
+    this.textChanged$.asObservable()
+      .pipe(
+        debounceTime(500),
+        filter(text => text.length >= 3),
+        switchMap(this.getMovies)
+      )
+      .subscribe((res: any) => {
+        if (res.Response == 'False') {
           this.movies = [];
-          this.errorMessage = data.Error
+          this.errorMessage = res.Error
         }
-      }),
-      filter((data: any)=> data && data.Search),
-      map((data)=> data.Search)
-    )  
-    .subscribe((movies :any[])=>{ 
-      this.errorMessage = "";
-      this.movies = movies;
-    })
+        const search = res.Search;
+        this.errorMessage = "";
+        this.movies = search;
+      })
   }
+
+  getMovies = (text) => this.movieservice.getAllMovies(text);
+
+
+
 }
