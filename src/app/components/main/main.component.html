@@ -4,12 +4,14 @@
         <i class="fa fa-search" aria-hidden="true"></i>
     </div>
     <div class="clearfix"></div>
-<div class="thumbnail" *ngFor="let movie of movies; let i = index">
-            <img [src]="movie.Poster">
-            <h1>{{movie.Title}}</h1>
-            <h2>{{movie.Type}}</h2>
-            <div class="rate">{{movie.Year}}</div>     
+ <div class="thumbnail" *ngFor="let movie of movies  ">
+            <img *ngIf="movie.poster_path; else noImgTemplate" [src]="movie.poster_path">
+            <ng-template #noImgTemplate>
+            <img src="http://image.tmdb.org/t/p/w185//mF2FXzZ3EktWoagU4fzoabNsK6J.jpg">
+            </ng-template>
+            <h1>{{movie.title}}</h1>
+            <div class="rate">{{movie.vote_average}}</div>     
     </div> 
     <span *ngIf="errorMessage">{{errorMessage}}</span>
-  </div>
+  </div> 
 
